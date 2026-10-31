@@ -1,0 +1,16 @@
+package com.hospital.management.user.dto;
+
+import com.hospital.management.user.model.Role;
+
+import java.time.Instant;
+import java.util.Set;
+
+public record UserResponse(
+        String id,
+        String email,
+        String fullName,
+        Set<Role> roles,
+        boolean enabled,
+        Instant createdAt
+) {
+}

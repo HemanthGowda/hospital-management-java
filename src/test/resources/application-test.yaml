@@ -1,0 +1,24 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/hospital_management_test
+
+mongock:
+  migration-scan-package:
+    - com.hospital.management.migration
+  transactional: false
+
+app:
+  jwt:
+    secret: test-secret-key-that-is-long-enough-for-hs256-signing
+    expiration-ms: 3600000
+    issuer: hospital-management-test
+  seed:
+    admin-email: admin@hospital.local
+    admin-password: ChangeMe123!
+    admin-full-name: Hospital Admin
+
+logging:
+  level:
+    root: WARN
+    com.hospital.management: INFO
