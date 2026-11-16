@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.doctor.service.DoctorMapper;
@@ -170,45 +169,45 @@ class DoctorServiceTest {
     @Test
     void rejectsIfDoctorNameIsAboveRange() {
 
-        String fullName = "a".repeat(160);
+        String fullName = "a".repeat(161);
         DoctorRegister request = new DoctorRegister(fullName, "abc", "accc", "xyz");
 
         Set<ConstraintViolation<DoctorRegister>> violations = validator.validate(request);
 
-        assertTrue(violations.isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test
     void rejectsIfDoctorLicenceNumberIsAboveRange() {
 
-        String licenceNumber = "a1".repeat(20);
+        String licenceNumber = "a1".repeat(21);
         DoctorRegister request = new DoctorRegister("abc", licenceNumber, "accc", "xyz");
 
         Set<ConstraintViolation<DoctorRegister>> violations = validator.validate(request);
 
-        assertTrue(violations.isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test
     void rejectsIfDoctorSpecialityIsAboveRange() {
 
-        String speciality = "a2".repeat(40);
+        String speciality = "a2".repeat(41);
         DoctorRegister request = new DoctorRegister("abc", "ab12", speciality, "xyz");
 
         Set<ConstraintViolation<DoctorRegister>> violations = validator.validate(request);
 
-        assertTrue(violations.isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test
     void rejectsIfDoctorDepartmentIsAboveRange() {
 
-        String department = "xy".repeat(40);
+        String department = "xy".repeat(41);
         DoctorRegister request = new DoctorRegister("bsd", "abc", "accc", department);
 
         Set<ConstraintViolation<DoctorRegister>> violations = validator.validate(request);
 
-        assertTrue(violations.isEmpty());
+        assertFalse(violations.isEmpty());
     }
 
     @Test

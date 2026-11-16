@@ -8,7 +8,7 @@ public record DoctorRegister(
                  
                 @NotBlank(message = "name is required") 
                 @NotNull(message="name must not be null")
-                @Size(min=1,max = 160, message = "name must be at most 200 characters") 
+                @Size(min=1,max = 160, message = "name must be at most 160 characters") 
                 String fullName,
                 
                 @NotBlank(message = "licence number is required") 
