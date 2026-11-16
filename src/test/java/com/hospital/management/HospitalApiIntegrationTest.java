@@ -2,7 +2,6 @@ package com.hospital.management;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.patient.model.Gender;
@@ -12,6 +11,7 @@ import com.hospital.management.support.MongoTestcontainersConfig;
 import com.hospital.management.user.model.Role;
 import com.hospital.management.user.model.UserDocument;
 import com.hospital.management.user.repository.UserRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
