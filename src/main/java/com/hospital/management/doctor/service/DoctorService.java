@@ -31,7 +31,7 @@ public class DoctorService {
         DoctorDocument doctor = new DoctorDocument();
 
         doctor.setfullName(request.fullName().trim());
-        doctor.setLicencenumber(request.licenceNumber());
+        doctor.setLicencenumber(normalizedLicenceNumber);
         doctor.setSpecialty(request.speciality());
         doctor.setDepartment(request.department());
 

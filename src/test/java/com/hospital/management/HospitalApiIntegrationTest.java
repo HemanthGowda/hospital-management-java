@@ -2,6 +2,7 @@ package com.hospital.management;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.patient.model.Gender;
@@ -185,6 +186,41 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
   }
 
   @Test
+  void registerDoctorRequiresAuthentication() throws Exception {
+
+    mockMvc.perform(post("/api/v1/doctors")
+        .contentType(MediaType.APPLICATION_JSON)
+
+        .content("""
+            {
+               "fullName": "sg",
+               "licenceNumber": "ln12",
+               "speciality": "d",
+               "department": "djs"
+            }
+            """))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void adminCanAddDoctor() throws Exception {
+    String adminToken = login("admin@hospital.local", "ChangeMe123!");
+    mockMvc.perform(post("/api/v1/doctors")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            {
+               "fullName": "sg",
+               "licenceNumber": "abc1",
+               "speciality": "d",
+               "department": "djs"
+            }
+            """))
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
   void updatePatientRequiresAuthentication() throws Exception {
     mockMvc.perform(put("/api/v1/patients/{id}", patientId)
         .contentType(MediaType.APPLICATION_JSON)
@@ -247,4 +283,5 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
         }
         """;
   }
+
 }
