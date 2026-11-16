@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.hospital.management.doctor.dto.DoctorRegister;
 
-public class InputValidation {
+public class DoctorRegisterTest {
     private static Validator validator;
 
     @BeforeEach
