@@ -43,7 +43,7 @@ A signed-in person needs to open one doctor and read the directory record.
 
 ## Information
 
-The view shows :
+The view shows doctor's :
 
 - Full name
 - Specialty

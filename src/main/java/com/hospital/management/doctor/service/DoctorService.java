@@ -2,7 +2,6 @@ package com.hospital.management.doctor.service;
 
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
-import com.hospital.management.doctor.dto.DoctorResponseForView;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.exception.ConflictException;
@@ -47,9 +46,9 @@ public class DoctorService {
         return licenceNumber.trim().toLowerCase(Locale.ROOT);
     }
 
-    public DoctorResponseForView viewDoctor(String id) {
+    public DoctorResponse viewDoctor(String id) {
         DoctorDocument doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
-        return doctorMapper.toResponseForSigned(doctor);
+        return doctorMapper.toResponse(doctor);
     }
 }

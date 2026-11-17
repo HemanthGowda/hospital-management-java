@@ -22,7 +22,6 @@ import com.hospital.management.doctor.service.DoctorService;
 import com.hospital.management.exception.ResourceNotFoundException;
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
-import com.hospital.management.doctor.dto.DoctorResponseForView;
 
 @ExtendWith(MockitoExtension.class)
 class DoctorServiceTest {
@@ -111,7 +110,7 @@ class DoctorServiceTest {
         DoctorDocument saved = captor.getValue();
         when(doctorRepository.findById("1")).thenReturn(Optional.of(saved));
 
-        DoctorResponseForView view = doctorService.viewDoctor("1");
+        DoctorResponse view = doctorService.viewDoctor("1");
         assertThat(view.fullName()).isEqualTo("abc");
         assertThat(view.licenceNumber()).isEqualTo("abc");
         assertThat(view.speciality()).isEqualTo("dermatologist");

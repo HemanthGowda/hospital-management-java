@@ -2,7 +2,6 @@ package com.hospital.management.doctor.controller;
 
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
-import com.hospital.management.doctor.dto.DoctorResponseForView;
 
 import com.hospital.management.doctor.service.DoctorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,14 +57,14 @@ public class DoctorController {
 
     @GetMapping(value = "/doctors/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR','PATIENT')")
-    @Operation(summary = "view a doctor", description = "Displaysdoctor information. Requires ADMIN or existing DOCTOR or signed USER(PATIENT) role.")
-    @ApiResponse(responseCode = "200", description = "Doctor  found", content = @Content(schema = @Schema(implementation = DoctorResponseForView.class)))
+    @Operation(summary = "view a doctor", description = "Displays doctor information. Requires ADMIN or existing DOCTOR or signed USER(PATIENT) role.")
+    @ApiResponse(responseCode = "200", description = "Doctor  found", content = @Content(schema = @Schema(implementation = DoctorResponse.class)))
 
     @ApiResponse(responseCode = "403", description = "Is unauthorized", content = @Content)
 
     @ApiResponse(responseCode = "404", description = "Doctor not found", content = @Content)
 
-    public DoctorResponseForView viewDoctor(@PathVariable String id) throws Exception {
+    public DoctorResponse viewDoctor(@PathVariable String id) throws Exception {
         return doctorService.viewDoctor(id);
     }
 
