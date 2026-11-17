@@ -10,4 +10,8 @@ public interface DoctorRepository extends MongoRepository<DoctorDocument, String
 
     boolean existsByLicenceNumber(String licenceNumber);
 
+    Optional<DoctorDocument> findById(String id);
+
+    boolean existsById(String id);
+
 }

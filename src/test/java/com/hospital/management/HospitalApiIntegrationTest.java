@@ -32,6 +32,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,6 +63,7 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
   private PasswordEncoder passwordEncoder;
 
   private String patientId;
+  private String doctorId;
 
   @BeforeEach
   void setUp() {
@@ -87,6 +90,15 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
     patientUser.setUpdatedAt(Instant.now());
     userRepository.save(patientUser);
 
+    UserDocument DoctorUser = new UserDocument();
+    DoctorUser.setEmail("doctor@hospital.local");
+    DoctorUser.setPasswordHash(passwordEncoder.encode("DoctorPass1"));
+    DoctorUser.setFullName("doctor");
+    DoctorUser.setRoles(Set.of(Role.DOCTOR));
+    DoctorUser.setEnabled(true);
+    DoctorUser.setCreatedAt(Instant.now());
+    userRepository.save(DoctorUser);
+
     PatientDocument patient = new PatientDocument();
     patient.setFullName("Seed Patient");
     patient.setPrimaryDoctorName("Dr. Seed");
@@ -101,9 +113,10 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
     DoctorDocument doctor = new DoctorDocument();
     doctor.setfullName("doctor");
     doctor.setLicencenumber("abc");
-    doctor.setSpecialty("doc");
+    doctor.setSpecialty("doctor");
     doctor.setDepartment("hdbdb");
     doctorRepository.save(doctor);
+    doctorId = doctorRepository.save(doctor).getId();
 
   }
 
@@ -217,6 +230,50 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
             }
             """))
         .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void adminCanViewADoctor() throws Exception {
+    String adminToken = login("admin@hospital.local", "ChangeMe123!");
+    mockMvc.perform(get("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void patientCanViewADoctor() throws Exception {
+    String patientToken = login("patient@hospital.local", "PatientPass1");
+
+    mockMvc.perform(get("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + patientToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void doctorCanViewADoctor() throws Exception {
+    String doctorToken = login("doctor@hospital.local", "DoctorPass1");
+
+    mockMvc.perform(get("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + doctorToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void viewDoctorRequiresAuthentication() throws Exception {
+    mockMvc.perform(get("/api/v1/doctors/{id}", doctorId)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isUnauthorized());
 
   }
 
