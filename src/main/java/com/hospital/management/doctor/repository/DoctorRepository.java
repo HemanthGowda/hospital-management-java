@@ -2,6 +2,8 @@ package com.hospital.management.doctor.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import com.hospital.management.doctor.model.DoctorDocument;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface DoctorRepository extends MongoRepository<DoctorDocument, String> {
@@ -13,5 +15,7 @@ public interface DoctorRepository extends MongoRepository<DoctorDocument, String
     Optional<DoctorDocument> findById(String id);
 
     boolean existsById(String id);
+
+    List<DoctorDocument> findByFullNameIgnoreCase(String fullName);
 
 }

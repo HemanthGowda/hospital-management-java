@@ -7,6 +7,8 @@ import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
 
@@ -51,4 +53,14 @@ public class DoctorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
         return doctorMapper.toResponse(doctor);
     }
+
+    public List<DoctorResponse> searchDoctorsByName(String fullName) {
+        List<DoctorResponse> doctor = new ArrayList<>();
+        List<DoctorDocument> doctors = doctorRepository.findByFullNameIgnoreCase(fullName);
+        for (DoctorDocument doc : doctors) {
+            doctor.add(doctorMapper.toResponse(doc));
+        }
+        return doctor;
+    }
+
 }

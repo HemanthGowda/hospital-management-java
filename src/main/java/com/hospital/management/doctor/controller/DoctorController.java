@@ -11,11 +11,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -66,6 +70,18 @@ public class DoctorController {
 
     public DoctorResponse viewDoctor(@PathVariable String id) throws Exception {
         return doctorService.viewDoctor(id);
+    }
+
+    @GetMapping(value = "/doctors/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR','PATIENT')")
+    @Operation(summary = "search doctors", description = "Displays doctors information. Requires ADMIN or existing DOCTOR or signed USER(PATIENT) role.")
+    @ApiResponse(responseCode = "200", description = "Doctor name found and displayed", content = @Content(schema = @Schema(implementation = DoctorResponse.class)))
+
+    @ApiResponse(responseCode = "403", description = "Is unauthorized", content = @Content)
+
+    public List<DoctorResponse> searchDoctors(@RequestParam("fullName") String fullName) throws Exception {
+        return doctorService.searchDoctorsByName(fullName);
+
     }
 
 }
