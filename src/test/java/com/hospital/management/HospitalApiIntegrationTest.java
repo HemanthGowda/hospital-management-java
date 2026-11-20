@@ -278,6 +278,62 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
   }
 
   @Test
+  void adminCanSearchDoctors() throws Exception {
+    String adminToken = login("admin@hospital.local", "ChangeMe123!");
+    mockMvc.perform(get("/api/v1//doctors/search")
+        .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void patientCanSearchDoctors() throws Exception {
+    String patientToken = login("patient@hospital.local", "PatientPass1");
+
+    mockMvc.perform(get("/api/v1/doctors/search")
+        .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + patientToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void doctorCanSearchDoctors() throws Exception {
+    String doctorToken = login("doctor@hospital.local", "DoctorPass1");
+
+    mockMvc.perform(get("/api/v1/doctors/search")
+        .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + doctorToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void searchDoctorsRequiresAuthentication() throws Exception {
+    mockMvc.perform(get("/api/v1/doctors/search")
+        .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isUnauthorized());
+
+  }
+
+  @Test
   void updatePatientRequiresAuthentication() throws Exception {
     mockMvc.perform(put("/api/v1/patients/{id}", patientId)
         .contentType(MediaType.APPLICATION_JSON)

@@ -1,12 +1,17 @@
 package com.hospital.management.doctor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
-
 import com.hospital.management.doctor.model.DoctorDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +20,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.doctor.service.DoctorMapper;
@@ -115,6 +121,55 @@ class DoctorServiceTest {
         assertThat(view.licenceNumber()).isEqualTo("abc");
         assertThat(view.speciality()).isEqualTo("dermatologist");
         assertThat(view.department()).isEqualTo("xyz");
+
+    }
+
+    @Test
+    void searchUnregisteredDoctorDetailsByName() {
+
+        Pageable page = PageRequest.of(0, 1);
+        when(doctorRepository.findByFullNameContainingOrderByFullNameAsc("invalidName", page))
+                .thenReturn(Page.empty());
+
+        Page<DoctorResponse> doc = doctorService.searchDoctorsByName("invalidName", page);
+        assertEquals(doc.getNumberOfElements(), 0);
+    }
+
+    @Test
+    void searchRegisteredDoctorDetialsByName() {
+
+        Pageable page = PageRequest.of(0, 1);
+        DoctorRegister request = new DoctorRegister(
+
+                "abc",
+                "abc12",
+                "dermatologist",
+                "xyz");
+
+        when(doctorRepository.save(any(DoctorDocument.class))).thenAnswer(invocation -> {
+            DoctorDocument document = invocation.getArgument(0);
+            document.setId("1");
+            return document;
+        });
+        doctorService.register(request);
+
+        ArgumentCaptor<DoctorDocument> captor = ArgumentCaptor.forClass(DoctorDocument.class);
+        verify(doctorRepository).save(captor.capture());
+
+        DoctorDocument saved = captor.getValue();
+
+        when(doctorRepository.findByFullNameContainingOrderByFullNameAsc("abc", page))
+                .thenReturn(new PageImpl<>(List.of(saved)));
+
+        Page<DoctorResponse> search = doctorService.searchDoctorsByName("abc", page);
+
+        assertEquals(1, search.getTotalPages());
+        assertEquals(1, search.getNumberOfElements());
+        assertEquals(1, search.getTotalPages());
+        assertEquals("abc", search.getContent().get(0).fullName());
+        assertEquals("abc12", search.getContent().get(0).licenceNumber());
+        assertEquals("dermatologist", search.getContent().get(0).speciality());
+        assertEquals("xyz", search.getContent().get(0).department());
 
     }
 
