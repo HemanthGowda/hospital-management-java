@@ -282,6 +282,8 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
     String adminToken = login("admin@hospital.local", "ChangeMe123!");
     mockMvc.perform(get("/api/v1//doctors/search")
         .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
         .contentType(MediaType.APPLICATION_JSON))
 
@@ -294,7 +296,10 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
     String patientToken = login("patient@hospital.local", "PatientPass1");
 
     mockMvc.perform(get("/api/v1/doctors/search")
-        .param("fullName", "doctor").header(HttpHeaders.AUTHORIZATION, "Bearer " + patientToken)
+        .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + patientToken)
         .contentType(MediaType.APPLICATION_JSON))
 
         .andExpect(status().isOk());
@@ -307,6 +312,8 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
 
     mockMvc.perform(get("/api/v1/doctors/search")
         .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + doctorToken)
         .contentType(MediaType.APPLICATION_JSON))
 
@@ -317,7 +324,10 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
   @Test
   void searchDoctorsRequiresAuthentication() throws Exception {
     mockMvc.perform(get("/api/v1/doctors/search")
-        .param("fullName", "doctor").contentType(MediaType.APPLICATION_JSON))
+        .param("fullName", "doctor")
+        .param("page", "0")
+        .param("sizePerPage", "2")
+        .contentType(MediaType.APPLICATION_JSON))
 
         .andExpect(status().isUnauthorized());
 

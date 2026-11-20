@@ -11,8 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,13 +76,14 @@ public class DoctorController {
     @GetMapping(value = "/doctors/search", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR','PATIENT')")
     @Operation(summary = "search doctors", description = "Displays doctors information. Requires ADMIN or existing DOCTOR or signed USER(PATIENT) role.")
-    @ApiResponse(responseCode = "200", description = "Doctor name found and displayed", content = @Content(schema = @Schema(implementation = DoctorResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Doctor name found and details displayed", content = @Content(schema = @Schema(implementation = DoctorResponse.class)))
 
     @ApiResponse(responseCode = "403", description = "Is unauthorized", content = @Content)
 
-    public List<DoctorResponse> searchDoctors(@RequestParam("fullName") String fullName) throws Exception {
-        return doctorService.searchDoctorsByName(fullName);
-
+    public Page<DoctorResponse> searchDoctorsByName(@RequestParam("fullName") String fullName,
+            @RequestParam("page") int page,
+            @RequestParam("sizePerPage") int sizePerPage) {
+        Pageable pageable = PageRequest.of(page, sizePerPage);
+        return doctorService.searchDoctorsByName(fullName, pageable);
     }
-
 }

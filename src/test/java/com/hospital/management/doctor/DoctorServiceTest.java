@@ -5,12 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Optional;
-
 import com.hospital.management.doctor.model.DoctorDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,24 +125,27 @@ class DoctorServiceTest {
     }
 
     @Test
-    void ViewUnregisteredDoctorName() {
-        when(doctorRepository.findByFullNameIgnoreCase("invalidName")).thenReturn(new ArrayList<>());
+    void searchUnregisteredDoctorDetailsByName() {
 
-        List<DoctorResponse> doc = doctorService.searchDoctorsByName("invalidName");
-        assertEquals(0, doc.size());
+        Pageable page = PageRequest.of(0, 1);
+        when(doctorRepository.findByFullNameContainingOrderByFullNameAsc("invalidName", page))
+                .thenReturn(Page.empty());
+
+        Page<DoctorResponse> doc = doctorService.searchDoctorsByName("invalidName", page);
+        assertEquals(doc.getNumberOfElements(), 0);
     }
 
     @Test
-    void ViewRegisteredDoctorsByName() {
+    void searchRegisteredDoctorDetialsByName() {
 
+        Pageable page = PageRequest.of(0, 1);
         DoctorRegister request = new DoctorRegister(
 
                 "abc",
-                "abc",
+                "abc12",
                 "dermatologist",
                 "xyz");
 
-        when(doctorRepository.existsByLicenceNumber("abc")).thenReturn(false);
         when(doctorRepository.save(any(DoctorDocument.class))).thenAnswer(invocation -> {
             DoctorDocument document = invocation.getArgument(0);
             document.setId("1");
@@ -153,13 +157,19 @@ class DoctorServiceTest {
         verify(doctorRepository).save(captor.capture());
 
         DoctorDocument saved = captor.getValue();
-        when(doctorRepository.findByFullNameIgnoreCase("abc")).thenReturn(List.of(saved));
 
-        List<DoctorResponse> view = doctorService.searchDoctorsByName("abc");
-        assertThat(view.get(0).fullName()).isEqualTo("abc");
-        assertThat(view.get(0).licenceNumber()).isEqualTo("abc");
-        assertThat(view.get(0).speciality()).isEqualTo("dermatologist");
-        assertThat(view.get(0).department()).isEqualTo("xyz");
+        when(doctorRepository.findByFullNameContainingOrderByFullNameAsc("abc", page))
+                .thenReturn(new PageImpl<>(List.of(saved)));
+
+        Page<DoctorResponse> search = doctorService.searchDoctorsByName("abc", page);
+
+        assertEquals(1, search.getTotalPages());
+        assertEquals(1, search.getNumberOfElements());
+        assertEquals(1, search.getTotalPages());
+        assertEquals("abc", search.getContent().get(0).fullName());
+        assertEquals("abc12", search.getContent().get(0).licenceNumber());
+        assertEquals("dermatologist", search.getContent().get(0).speciality());
+        assertEquals("xyz", search.getContent().get(0).department());
 
     }
 
