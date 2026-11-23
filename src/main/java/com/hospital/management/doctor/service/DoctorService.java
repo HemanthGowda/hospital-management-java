@@ -2,6 +2,7 @@ package com.hospital.management.doctor.service;
 
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
+import com.hospital.management.doctor.dto.DoctorUpdateRequest;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.exception.ConflictException;
@@ -58,7 +59,7 @@ public class DoctorService {
                 .map(doctorMapper::toResponse);
     }
 
-    public DoctorResponse updateDoctorDetails(String id, DoctorRegister request) {
+    public DoctorResponse updateDoctorDetails(String id, DoctorUpdateRequest request) {
 
         DoctorDocument doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));

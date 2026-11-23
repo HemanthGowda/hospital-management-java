@@ -29,6 +29,7 @@ import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
+import com.hospital.management.doctor.dto.DoctorUpdateRequest;
 
 @ExtendWith(MockitoExtension.class)
 class DoctorServiceTest {
@@ -184,7 +185,7 @@ class DoctorServiceTest {
         doctor.setSpecialty("health");
         doctor.setDepartment("dept-1");
 
-        DoctorRegister request = new DoctorRegister("xyz", "lc12", "health", "dept-1");
+        DoctorUpdateRequest request = new DoctorUpdateRequest("xyz", "lc12", "health", "dept-1");
         when(doctorRepository.findById("doc-1")).thenReturn(Optional.of(doctor));
         when(doctorRepository.existsByLicenceNumberAndIdNot("lc12", "doc-1")).thenReturn(false);
         when(doctorRepository.save(any(DoctorDocument.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -201,7 +202,7 @@ class DoctorServiceTest {
     @Test
     void updateFailsForUnregisteredDoctor() {
         when(doctorRepository.findById("invalidId")).thenReturn(Optional.empty());
-        DoctorRegister request = new DoctorRegister("xyz", "lc12", "health", "dept-1");
+        DoctorUpdateRequest request = new DoctorUpdateRequest("xyz", "lc12", "health", "dept-1");
 
         assertThatThrownBy(() -> doctorService.updateDoctorDetails("invalidId", request))
                 .isInstanceOf(ResourceNotFoundException.class);
@@ -218,7 +219,7 @@ class DoctorServiceTest {
         when(doctorRepository.findById("doc1")).thenReturn(Optional.of(existing));
         when(doctorRepository.existsByLicenceNumberAndIdNot("lc2", "doc1")).thenReturn(true);
 
-        DoctorRegister request = new DoctorRegister("xyz", "lc2", "health", "dept-1");
+        DoctorUpdateRequest request = new DoctorUpdateRequest("xyz", "lc2", "health", "dept-1");
 
         assertThatThrownBy(() -> doctorService.updateDoctorDetails("doc1", request))
                 .isInstanceOf(ConflictException.class)
