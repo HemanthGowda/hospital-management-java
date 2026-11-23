@@ -63,16 +63,25 @@ public class DoctorService {
         DoctorDocument doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
 
-        String licenceNumber = normalizeLicence(request.licenceNumber());
+        if (request.licenceNumber() != null) {
+            String licenceNumber = normalizeLicence(request.licenceNumber());
 
-        if (doctorRepository.existsByLicenceNumberAndIdNot(licenceNumber, id)) {
-            throw new ConflictException("Licence number is already assigned to another doctor");
+            if (doctorRepository.existsByLicenceNumberAndIdNot(licenceNumber, id)) {
+                throw new ConflictException("Licence number is already assigned to another doctor");
+            }
+            doctor.setLicencenumber(request.licenceNumber().trim());
         }
 
-        doctor.setfullName(request.fullName().trim());
-        doctor.setLicencenumber(request.licenceNumber().trim());
-        doctor.setSpecialty(request.speciality().trim());
-        doctor.setDepartment(request.department().trim());
+        if (request.fullName() != null) {
+
+            doctor.setfullName(request.fullName().trim());
+        }
+        if (request.speciality() != null) {
+            doctor.setSpecialty(request.speciality().trim());
+        }
+        if (request.department() != null) {
+            doctor.setDepartment(request.department().trim());
+        }
         DoctorDocument saved = doctorRepository.save(doctor);
         return doctorMapper.toResponse(saved);
     }
