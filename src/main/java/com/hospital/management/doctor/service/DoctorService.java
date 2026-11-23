@@ -69,7 +69,7 @@ public class DoctorService {
             if (doctorRepository.existsByLicenceNumberAndIdNot(licenceNumber, id)) {
                 throw new ConflictException("Licence number is already assigned to another doctor");
             }
-            doctor.setLicencenumber(request.licenceNumber().trim());
+            doctor.setLicencenumber(licenceNumber);
         }
 
         if (request.fullName() != null) {
