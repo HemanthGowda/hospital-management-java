@@ -59,8 +59,5 @@ public class PatientService {
             return null;
         }
         return value.trim();
-    }
-
-
-    
+    }    
 }
