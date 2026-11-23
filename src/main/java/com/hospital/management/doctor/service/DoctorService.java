@@ -2,17 +2,15 @@ package com.hospital.management.doctor.service;
 
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
+import com.hospital.management.doctor.dto.DoctorUpdateRequest;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -48,10 +46,6 @@ public class DoctorService {
         return doctorMapper.toResponse(saved);
     }
 
-    public String normalizeLicence(String licenceNumber) {
-        return licenceNumber.trim().toLowerCase(Locale.ROOT);
-    }
-
     public DoctorResponse viewDoctor(String id) {
 
         DoctorDocument doctor = doctorRepository.findById(id)
@@ -63,6 +57,38 @@ public class DoctorService {
 
         return doctorRepository.findByFullNameContainingOrderByFullNameAsc(fullName, page)
                 .map(doctorMapper::toResponse);
+    }
+
+    public DoctorResponse updateDoctorDetails(String id, DoctorUpdateRequest request) {
+
+        DoctorDocument doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
+
+        if (request.licenceNumber() != null) {
+            String licenceNumber = normalizeLicence(request.licenceNumber());
+
+            if (doctorRepository.existsByLicenceNumberAndIdNot(licenceNumber, id)) {
+                throw new ConflictException("Licence number is already assigned to another doctor");
+            }
+            doctor.setLicencenumber(licenceNumber);
+        }
+
+        if (request.fullName() != null) {
+
+            doctor.setfullName(request.fullName().trim());
+        }
+        if (request.speciality() != null) {
+            doctor.setSpecialty(request.speciality().trim());
+        }
+        if (request.department() != null) {
+            doctor.setDepartment(request.department().trim());
+        }
+        DoctorDocument saved = doctorRepository.save(doctor);
+        return doctorMapper.toResponse(saved);
+    }
+
+    public String normalizeLicence(String licenceNumber) {
+        return licenceNumber.trim().toLowerCase(Locale.ROOT);
     }
 
 }
