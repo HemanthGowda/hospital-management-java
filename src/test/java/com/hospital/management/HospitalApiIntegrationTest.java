@@ -446,7 +446,7 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
 
   @Test
   void deleteDoctorRequiresAuthentication() throws Exception {
-    mockMvc.perform(put("/api/v1/doctors/{id}", doctorId)
+    mockMvc.perform(delete("/api/v1/doctors/{id}", doctorId)
         .contentType(MediaType.APPLICATION_JSON)
         .content(validUpdatePayload()))
         .andExpect(status().isUnauthorized());
