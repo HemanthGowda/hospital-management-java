@@ -22,4 +22,6 @@ public interface DoctorRepository extends MongoRepository<DoctorDocument, String
 
     boolean existsByLicenceNumberAndIdNot(String licenceNumber, String id);
 
+    void deleteById(String id);
+
 }

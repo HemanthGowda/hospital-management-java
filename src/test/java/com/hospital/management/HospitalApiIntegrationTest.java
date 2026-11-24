@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -405,6 +406,51 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
         .contentType(MediaType.APPLICATION_JSON)
         .content(validUpdatePayload()))
         .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void adminCanDeleteADoctor() throws Exception {
+
+    String adminToken = login("admin@hospital.local", "ChangeMe123!");
+    mockMvc.perform(delete("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void doctorCanDeleteADoctor() throws Exception {
+
+    String doctorToken = login("doctor@hospital.local", "DoctorPass1");
+    mockMvc.perform(delete("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + doctorToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void patientCannnotDeleteADoctor() throws Exception {
+
+    String patientToken = login("patient@hospital.local", "PatientPass1");
+    mockMvc.perform(delete("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + patientToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void deleteDoctorRequiresAuthentication() throws Exception {
+    mockMvc.perform(put("/api/v1/doctors/{id}", doctorId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(validUpdatePayload()))
+        .andExpect(status().isUnauthorized());
+
   }
 
   @Test

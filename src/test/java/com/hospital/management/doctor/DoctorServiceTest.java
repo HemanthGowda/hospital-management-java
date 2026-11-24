@@ -1,7 +1,6 @@
 package com.hospital.management.doctor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +26,8 @@ import com.hospital.management.doctor.service.DoctorMapper;
 import com.hospital.management.doctor.service.DoctorService;
 import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
+
+import com.hospital.management.patient.repository.PatientRepository;
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
 import com.hospital.management.doctor.dto.DoctorUpdateRequest;
@@ -37,10 +38,12 @@ class DoctorServiceTest {
     @Mock
     private DoctorRepository doctorRepository;
     private DoctorService doctorService;
+    @Mock
+    private PatientRepository patientRepository;
 
     @BeforeEach
     void setUp() {
-        doctorService = new DoctorService(doctorRepository, new DoctorMapper());
+        doctorService = new DoctorService(doctorRepository, new DoctorMapper(), patientRepository);
 
     }
 
@@ -224,6 +227,42 @@ class DoctorServiceTest {
         assertThatThrownBy(() -> doctorService.updateDoctorDetails("doc1", request))
                 .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("Licence number is already assigned to another doctor");
+    }
+
+    @Test
+    void deleteExistingDoctor() {
+
+        DoctorRegister request = new DoctorRegister(
+
+                "abc ",
+                "abc12",
+                "dermatologist",
+                "xyz");
+
+        when(doctorRepository.existsByLicenceNumber("abc12")).thenReturn(false);
+        when(doctorRepository.save(any(DoctorDocument.class))).thenAnswer(invocation -> {
+            DoctorDocument document = invocation.getArgument(0);
+            document.setId("1");
+            return document;
+        });
+        doctorService.register(request);
+
+        ArgumentCaptor<DoctorDocument> captor = ArgumentCaptor.forClass(DoctorDocument.class);
+        verify(doctorRepository).save(captor.capture());
+
+        DoctorDocument saved = captor.getValue();
+        when(doctorRepository.findById("1")).thenReturn(Optional.of(saved));
+        String response = doctorService.deleteADoctor("1");
+        assertEquals("abc", response);
+
+    }
+
+    @Test
+    void deleteFailsForUnregisteredDoctor() {
+        when(doctorRepository.findById("invalidId")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> doctorService.deleteADoctor("invalidId"))
+                .isInstanceOf(ResourceNotFoundException.class);
+
     }
 
 }
