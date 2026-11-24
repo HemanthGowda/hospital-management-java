@@ -440,7 +440,7 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + patientToken)
         .contentType(MediaType.APPLICATION_JSON))
 
-        .andExpect(status().isOk());
+        .andExpect(status().isForbidden());
 
   }
 
