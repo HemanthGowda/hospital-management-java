@@ -26,7 +26,6 @@ import com.hospital.management.doctor.service.DoctorMapper;
 import com.hospital.management.doctor.service.DoctorService;
 import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
-
 import com.hospital.management.patient.repository.PatientRepository;
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;

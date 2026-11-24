@@ -30,7 +30,7 @@ public class OpenApiConfig {
                                                                 - GET  /api/v1/doctors/{id} - view a doctor(ADMIN,DOCTOR,PATIENT)
                                                                 - GET  /api/v1/doctors/search?name -search doctors(ADMIN,DOCTOR,PATIENT)
                                                                 - PATCH /api/v1/doctors/{id} -secured doctor update(ADMIN,DOCTOR)
-                                                                - DELETE /api/v1/doctors/{id} -doctor update(ADMIN,DOCTOR)
+                                                                - DELETE /api/v1/doctors/{id} -doctor deletion(ADMIN,DOCTOR)
                                                                 The Doctor resource is intentionally left unimplemented for interns.
                                                                 """)
                                                 .version("0.1.0")
