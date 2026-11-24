@@ -5,6 +5,7 @@ import com.hospital.management.doctor.dto.DoctorResponse;
 import com.hospital.management.doctor.dto.DoctorUpdateRequest;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
+import com.hospital.management.patient.repository.PatientRepository;
 import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
 
@@ -20,10 +21,13 @@ public class DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final DoctorMapper doctorMapper;
+    private final PatientRepository patientRepository;
 
-    public DoctorService(DoctorRepository doctorRepository, DoctorMapper doctorMapper) {
+    public DoctorService(DoctorRepository doctorRepository, DoctorMapper doctorMapper,
+            PatientRepository patientRepository) {
         this.doctorRepository = doctorRepository;
         this.doctorMapper = doctorMapper;
+        this.patientRepository = patientRepository;
     }
 
     public DoctorResponse register(DoctorRegister request) {
@@ -85,6 +89,19 @@ public class DoctorService {
         }
         DoctorDocument saved = doctorRepository.save(doctor);
         return doctorMapper.toResponse(saved);
+    }
+
+    public String deleteADoctor(String id) {
+        DoctorDocument doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
+
+        String doctorname = doctor.getfullName();
+        if (patientRepository.existsByPrimaryDoctorName(doctorname)) {
+            throw new ConflictException("doctor has been assigned to a patient");
+        }
+
+        doctorRepository.deleteById(id);
+        return doctor.getfullName();
     }
 
     public String normalizeLicence(String licenceNumber) {

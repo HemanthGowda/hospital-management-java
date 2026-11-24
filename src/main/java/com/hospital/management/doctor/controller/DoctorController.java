@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -102,4 +103,18 @@ public class DoctorController {
         return doctorService.updateDoctorDetails(id, request);
 
     }
+
+    @DeleteMapping(value = "/doctors/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    @Operation(summary = "delete a doctor", description = "delete doctor details. Requires ADMIN or existing DOCTOR role.")
+    @ApiResponse(responseCode = "200", description = "Doctor deleted", content = @Content(schema = @Schema(implementation = DoctorResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content)
+    @ApiResponse(responseCode = "403", description = "Insufficient role", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Doctor not found", content = @Content)
+
+    public String deleteADoctor(@PathVariable("id") String id) {
+        return doctorService.deleteADoctor(id);
+
+    }
+
 }
