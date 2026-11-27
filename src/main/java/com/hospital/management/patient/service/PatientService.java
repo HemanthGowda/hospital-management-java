@@ -20,7 +20,6 @@ import com.hospital.management.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -86,7 +85,7 @@ public class PatientService {
                 .orElseThrow(() -> new ResourceNotFoundException("user not found: " + request.userId()));
 
         if (!user.getRoles().contains(Role.PATIENT)) {
-        throw new BadRequestException("invalid role");
+            throw new BadRequestException("invalid role");
         }
         DoctorDocument doctor = doctorRepository.findById(request.primaryDoctorId())
                 .orElseThrow(() -> new ResourceNotFoundException("doctor not found: " + request.primaryDoctorId()));

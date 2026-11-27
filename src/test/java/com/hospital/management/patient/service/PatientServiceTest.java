@@ -173,7 +173,7 @@ class PatientServiceTest {
     }
 
     @Test
-    void registerCreatesAPatientChart() {
+    void registerAPatient() {
 
         DoctorDocument doctor = new DoctorDocument();
         doctor.setId("doc-1");
@@ -217,6 +217,42 @@ class PatientServiceTest {
     }
 
     @Test
+    void registerFailsForDuplicatMedicalNumber() {
+
+        when(patientRepository.existsByMedicalRecordNumber("hsghas")).thenReturn(true);
+
+        assertThatThrownBy(() -> patientService.register(
+                new PatientRegisterRequest("Ada Lovelace",
+                        "123",
+                        "doc-1",
+                        "MRN-100002",
+                        LocalDate.of(1815, 12, 10),
+                        Gender.FEMALE,
+                        "+15551230001",
+                        "o+",
+                        "Updated notes")))
+
+                .hasMessageContaining("already registered");
+    }
+
+    @Test
+    void patientRegisterFailsForInvalidDoctorId() {
+        when(doctorRepository.existsById("doc-1")).thenReturn(false);
+        assertThatThrownBy(() -> patientService.register(
+                new PatientRegisterRequest("Ada Lovelace",
+                        "123",
+                        "doc-1",
+                        "MRN-100002",
+                        LocalDate.of(1815, 12, 10),
+                        Gender.FEMALE,
+                        "+15551230001",
+                        "o+",
+                        "Updated notes")))
+
+                .hasMessageContaining("doctor not found");
+    }
+
+    @Test
     void ViewRegisteredPatientByValidId() {
         DoctorDocument doctor = new DoctorDocument();
         doctor.setId("doc-1");
@@ -243,7 +279,6 @@ class PatientServiceTest {
 
         when(userRepository.findById("123")).thenReturn(Optional.of(user));
         when(doctorRepository.findById("doc-1")).thenReturn(Optional.of(doctor));
-        // when(patientRepository.existsById("1")).thenReturn(true);
         when(patientDoctorRespsoitory.findByPatientId("1")).thenReturn(Optional.of(pat));
 
         when(patientRepository.existsByMedicalRecordNumber("MRN-100002")).thenReturn(false);
@@ -266,7 +301,6 @@ class PatientServiceTest {
         PatientResponse view = patientService.viewPatient("1");
         assertThat(view.fullName()).isEqualTo("Ada Lovelace");
         assertThat(view.medicalRecordNumber()).isEqualTo("MRN-100002");
-       
 
     }
 

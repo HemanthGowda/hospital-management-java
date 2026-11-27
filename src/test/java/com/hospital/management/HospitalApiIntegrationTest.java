@@ -254,6 +254,7 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
         .andExpect(status().isOk());
 
   }
+
   @Test
   void doctorCanAddAPatient() throws Exception {
     String doctorToken = login("doctor@hospital.local", "DoctorPass1");
@@ -274,6 +275,27 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
               """))
         .andExpect(status().isOk());
 
+  }
+
+  @Test
+  void registerPatientRequiresAuthentication() throws Exception {
+
+    mockMvc.perform(post("/api/v1/patients")
+        .contentType(MediaType.APPLICATION_JSON)
+
+        .content("""
+            {"fullName": "Ada Lovelace",
+              "userId" :"123",
+            "primaryDoctorId":"doc-1",
+            "medicalRecordNumber": "MRN-100002",
+            "dateOfBirth": "1815-12-10",
+            "gender": "FEMALE",
+            "phone": "+15551230001",
+            "bloodGroup": "O+",
+            "notes": "Updated by integration test"
+              }
+            """))
+        .andExpect(status().isForbidden());
   }
 
   @Test
@@ -314,6 +336,38 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
   @Test
   void viewDoctorRequiresAuthentication() throws Exception {
     mockMvc.perform(get("/api/v1/doctors/{id}", doctorId)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isUnauthorized());
+
+  }
+
+  @Test
+  void adminCanViewAPatient() throws Exception {
+    String adminToken = login("admin@hospital.local", "ChangeMe123!");
+    mockMvc.perform(get("/api/v1/patients/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void doctorCanViewAPatient() throws Exception {
+    String doctorToken = login("doctor@hospital.local", "DoctorPass1");
+
+    mockMvc.perform(get("/api/v1/patients/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + doctorToken)
+        .contentType(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+  }
+
+  @Test
+  void viewPatientRequiresAuthentication() throws Exception {
+    mockMvc.perform(get("/api/v1/patients/{id}", doctorId)
         .contentType(MediaType.APPLICATION_JSON))
 
         .andExpect(status().isUnauthorized());

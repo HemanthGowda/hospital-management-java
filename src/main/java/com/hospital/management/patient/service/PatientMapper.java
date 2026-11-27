@@ -1,14 +1,9 @@
 package com.hospital.management.patient.service;
 
 import com.hospital.management.doctor.dto.DoctorPatientResponse;
-import com.hospital.management.doctor.dto.DoctorResponse;
 import com.hospital.management.patient.dto.PatientDoctorResponse;
-import com.hospital.management.patient.model.PatientDoctorDocument;
 import com.hospital.management.patient.dto.PatientResponse;
 import com.hospital.management.patient.model.PatientDocument;
-
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 @Component

@@ -11,21 +11,21 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record PatientRegisterRequest(
-        @NotBlank(message = "Full name is required") @Size(min = 2, max = 160, message = "Full name must be between 2 and 160 characters") String fullName,
+                @NotBlank(message = "Full name is required") @Size(min = 2, max = 160, message = "Full name must be between 2 and 160 characters") String fullName,
 
-        @NotBlank(message = "user id required") @Size(min = 1, max = 160, message = "Full name must be between 2 and 160 characters") String userId,
+                @NotBlank(message = "user id required") @Size(min = 1, max = 160, message = "Full name must be between 2 and 160 characters") String userId,
 
-        @NotBlank(message = "Primary doctor id is required") @Size(min = 1, max = 100, message = "Primary doctor id must be between 1 and 100 characters") String primaryDoctorId,
+                @NotBlank(message = "Primary doctor id is required") @Size(min = 1, max = 100, message = "Primary doctor id must be between 1 and 100 characters") String primaryDoctorId,
 
-        @NotBlank(message = "Medical record number is required") @Pattern(regexp = "(?i)^MRN-\\d{6}$", message = "Medical record number must look like MRN-100001") String medicalRecordNumber,
+                @NotBlank(message = "Medical record number is required") @Pattern(regexp = "(?i)^MRN-\\d{6}$", message = "Medical record number must look like MRN-100001") String medicalRecordNumber,
 
-        @NotNull(message = "Date of birth is required") @PastOrPresent(message = "Date of birth cannot be in the future") LocalDate dateOfBirth,
+                @NotNull(message = "Date of birth is required") @PastOrPresent(message = "Date of birth cannot be in the future") LocalDate dateOfBirth,
 
-        @NotNull(message = "Gender is required") Gender gender,
+                @NotNull(message = "Gender is required") Gender gender,
 
-        @Pattern(regexp = "^$|^[0-9+() .\\-]{7,20}$", message = "Phone must be between 7 and 20 characters") String phone,
+                @Pattern(regexp = "^$|^[0-9+() .\\-]{7,20}$", message = "Phone must be between 7 and 20 characters") String phone,
 
-        @Pattern(regexp = "(?i)^(|(A|B|AB|O)[+-])$", message = "Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-") String bloodGroup,
+                @Pattern(regexp = "(?i)^(|(A|B|AB|O)[+-])$", message = "Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-") String bloodGroup,
 
-        @Size(max = 2000, message = "Notes must be at most 2000 characters") String notes) {
+                @Size(max = 2000, message = "Notes must be at most 2000 characters") String notes) {
 }

@@ -202,12 +202,11 @@ A doctor or an administrator can remove a doctor who is not the primary doctor o
 403- Is unauthorized
 401 - Missing or invalid token
 
-
-
 # task6
 
-Clinicians need a patient chart to name a real doctor from the directory, so a rename or a correction shows up on every chart that uses that doctor.
+# tie-patients-to-doctors
 
+Clinicians need a patient chart to name a real doctor from the directory, so a rename or a correction shows up on every chart that uses that doctor.
 
 ## Requirement
 
